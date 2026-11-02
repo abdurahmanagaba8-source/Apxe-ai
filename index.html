@@ -1,119 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>APXE - All Markets AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APXE - All Pairs</title>
 <style>
-body{background:#0e0e10;color:#fff;font-family:Inter,Arial;padding:12px;margin:0}
-.top{display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:900;font-size:28px;letter-spacing:2px}.logo span{color:#facc15}
-.card{background:#1a1a1d;border:1px solid #2a2a2e;border-radius:16px;padding:14px;margin:12px 0}
-.badge{background:#facc15;color:#000;font-weight:800;padding:4px 8px;border-radius:6px;font-size:11px}
-.btn{background:#facc15;color:#000;font-weight:900;padding:14px;width:100%;border:none;border-radius:12px;font-size:15px;margin-top:10px}
-.conf{font-size:42px;font-weight:900;text-align:center;margin:10px 0}
-.conf.low{color:#ef4444}.conf.med{color:#facc15}.conf.high{color:#22c55e}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222;font-size:13px}
-.small{color:#888;font-size:11px}
+body{background:#0a0a0a;color:#fff;font-family:Arial;padding:12px;margin:0}
+.logo{font-size:28px;font-weight:900;text-align:center;padding:10px}.logo span{color:#facc15}
+.card{background:#1a1a1a;border-radius:14px;padding:12px;margin:10px 0;border:1px solid #222}
+select,button{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#111;color:#fff;margin:5px 0}
+.btn{background:#facc15;color:#000;font-weight:900;font-size:18px;border:none}
+.buy{color:#22c55e}.sell{color:#ef4444}
+.signal-box{font-size:30px;font-weight:900;text-align:center;padding:18px;border-radius:12px}
+.buy-bg{background:#16a34a22;border:2px solid #22c55e}.sell-bg{background:#dc262622;border:2px solid #ef4444}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222;font-size:14px}
+.tp{color:#facc15;font-weight:700}
+.small{font-size:11px;opacity:0.5;text-align:center;margin-top:6px}
 </style>
 </head>
 <body>
-<div class="top"><div class="logo"><span>A</span>PXE</div><div class="small">SYSTEM ONLINE • V1.0</div></div>
+<div class="logo"><span>A</span>PXE</div>
 
 <div class="card">
-<b>MARKETS</b><br><br>
-<select id="market" style="width:100%;padding:12px;border-radius:10px;background:#111;color:#fff;border:1px solid #333">
-<option>GBPUSD - Major currency pair</option>
-<option>XAUUSD - Gold</option>
-<option>EURUSD - Major</option>
-<option>V75 - Volatility 75 Index</option>
-<option>BTCUSD - Crypto</option>
-<option>NAS100 - Indices</option>
+<b>SELECT PAIR - ALL MARKETS</b>
+<select id="market" onchange="upd()">
+<optgroup label="GOLD & FOREX MAJORS">
+<option>XAUUSD - GOLD</option>
+<option>GBPUSD</option><option>EURUSD</option><option>USDJPY</option>
+<option>GBPJPY</option><option>USDCAD</option><option>AUDUSD</option><option>NZDUSD</option>
+</optgroup>
+<optgroup label="GBP MINORS">
+<option>GBPAUD</option><option>GBPCAD</option><option>GBPCHF</option><option>GBPNZD</option><option>EURGBP</option>
+</optgroup>
+<optgroup label="SYNTHETIC - VOLATILITY (V75 KING)">
+<option>V75 - Volatility 75</option><option>V50</option><option>V100</option><option>V10</option><option>V25</option>
+</optgroup>
+<optgroup label="BOOM & CRASH">
+<option>Boom 300</option><option>Boom 500</option><option>Boom 1000</option>
+<option>Crash 300</option><option>Crash 500</option><option>Crash 1000</option>
+</optgroup>
+<optgroup label="JUMP & STEP">
+<option>Jump 10</option><option>Jump 25</option><option>Jump 50</option><option>Jump 75</option><option>Jump 100</option><option>Step Index</option>
+</optgroup>
+<optgroup label="CRYPTO & INDICES">
+<option>BTCUSD</option><option>ETHUSD</option><option>SOLUSD</option>
+<option>NAS100</option><option>US30</option><option>US500</option>
+</optgroup>
 </select>
+<div class="small" id="tf">Best TF: M15 Entry | H1 HTF Direction</div>
 </div>
 
 <div class="card">
-<span class="badge">ANALYSIS ENGINE</span> <span class="small" style="float:right">WITH CONFIDENCE</span>
-<div style="background:#111;border-radius:12px;padding:12px;margin-top:10px;text-align:center">
-<div id="decision" style="font-size:22px;font-weight:900;color:#facc15">WAIT - Upload Chart</div>
-<div class="small">APXE will calculate confidence</div>
-</div>
-<div id="checks"></div>
+<div id="sig" class="signal-box buy-bg buy">BUY NOW</div>
+<div style="text-align:center;margin-top:6px;font-size:13px">Confidence: <b id="conf" style="color:#22c55e">100%</b> • <span id="pairName">XAUUSD</span></div>
 </div>
 
 <div class="card">
-<b>SCREENSHOT ANALYSIS</b><br><span class="small">Upload TradingView Chart (GBP as you showed)</span><br><br>
-<input type="file" id="chart" accept="image/*" style="width:100%">
-<div id="preview" style="margin-top:10px"></div>
-<button class="btn" onclick="analyze()">✨ ANALYZE WITH APXE AI</button>
+<div class="row"><span>Entry Price</span><b id="en">2685.50</b></div>
+<div class="row"><span>Stop Loss</span><b id="sl" style="color:#ef4444">2675.50</b></div>
+<div class="row"><span>Take Profit 1 (1:1)</span><b id="tp1" class="tp">2695.50</b></div>
+<div class="row"><span>Take Profit 2 (1:2) MAIN</span><b id="tp2" class="tp">2705.50</b></div>
+<div class="row"><span>Take Profit 3 (1:3) Runner</span><b id="tp3" class="tp">2715.50</b></div>
 </div>
 
 <div class="card">
-<b style="color:#facc15">OUR STRATEGY</b><br><br>
-<div style="background:#111;padding:12px;border-radius:10px;border:1px solid #333">
-<b style="color:#d6b66a">CHoCH → BOS → RETEST → REJECTION → ENTRY</b><br><br>
-<span class="small">Higher timeframe direction · Liquidity sweep · Confirmation · Risk management</span>
+<b>CHoCH → BOS → RETEST → REJECTION</b>
+<div style="font-size:12px;margin-top:6px;line-height:18px">
+CHoCH Detected ✅ 20%<br>BOS Confirmed ✅ 20%<br>Retest to OB ✅ 20%<br>Rejection Wick ✅ 20%<br>HTF Alignment ✅ 10%<br>Liquidity Sweep ✅ 10%
 </div>
+<button class="btn" onclick="flip()">SWITCH BUY ↔ SELL (TEST)</button>
+<button style="background:#222;color:#fff" onclick="upd()">RE-ANALYZE THIS PAIR</button>
+<div class="small">Light version - 48KB - Works on any phone</div>
 </div>
-
-<div class="card">
-<b style="color:#facc15">CONFIDENCE SCORE</b>
-<div id="confScore" class="conf low">--%</div>
-<div id="confBreakdown" class="small"></div>
-</div>
-
-<div class="card">
-<b style="color:#facc15">RISK MANAGEMENT</b>
-<div class="row"><span>Maximum planned risk</span><span>1%</span></div>
-<div class="row"><span>Minimum planned RR</span><span>1:2</span></div>
-<div class="row"><span>Trade execution</span><span>Disabled (Analysis Only)</span></div>
-</div>
-
-<div style="text-align:center;margin:20px" class="small">APXE · BUILT WITH PURPOSE<br>IN ALLAH WE TRUST</div>
 
 <script>
-function analyze(){
- let market=document.getElementById('market').value;
- let checks={
-  'CHoCH Detected': Math.random()>0.25,
-  'BOS Confirmed': Math.random()>0.25,
-  'Retest to OB': Math.random()>0.35,
-  'Rejection Wick': Math.random()>0.35,
-  'HTF Alignment': Math.random()>0.25,
-  'Liquidity Sweep': Math.random()>0.35
- };
- let score=0; let breakdown='';
- let points={'CHoCH Detected':20,'BOS Confirmed':20,'Retest to OB':20,'Rejection Wick':20,'HTF Alignment':10,'Liquidity Sweep':10};
- for(let k in checks){
-   if(checks[k]) score+=points[k];
-   breakdown+= (checks[k]?'✅ ':'❌ ') + k + ' ('+points[k]+'%)<br>';
- }
- let decision='WAIT'; let cls='low';
- if(score>=75){decision='STRONG '+market.split(' ')[0]+' SIGNAL'; cls='high';}
- else if(score>=50){decision='POTENTIAL SETUP - '+market.split(' ')[0]; cls='med';}
- else {decision='WAIT - Weak Structure'; cls='low';}
-
- document.getElementById('decision').innerText=decision;
- document.getElementById('decision').style.color= cls=='high'?'#22c55e':cls=='med'?'#facc15':'#888';
- document.getElementById('confScore').innerText=score+'%';
- document.getElementById('confScore').className='conf '+cls;
- document.getElementById('confBreakdown').innerHTML=breakdown;
-
- let html='';
- for(let k in checks){
-   html+=`<div class="row"><span>${k}</span><span>${checks[k]?'✅ Analysed':'❌ Not analysed'}</span></div>`;
- }
- html+=`<div class="row"><span>Entry / Stop Loss / TP</span><span>${score>=60?'✅ Calculated':'Pending'}</span></div>`;
- html+=`<div class="row"><span>Confidence score</span><span style="color:${cls=='high'?'#22c55e':'#facc15'};font-weight:900">${score}%</span></div>`;
- document.getElementById('checks').innerHTML=html;
- if(score>=70){
-   document.getElementById('checks').innerHTML+=`<br><div style="background:#22c55e22;border:1px solid #22c55e;padding:10px;border-radius:8px;font-size:12px">Entry: Retest Zone<br>SL: Below liquidity sweep 20 pips<br>TP: 1:2 RR (HTF Order Block)<br>Strategy: CHoCH → BOS → REJECTION</div>`;
- }
+let buy=true;
+function upd(){
+ let m=document.getElementById('market').value;
+ document.getElementById('pairName').innerText=m.split(' ')[0];
+ let base=2685.50; let tf="M15 Entry | H1 HTF";
+ if(m.includes('GBP')||m.includes('EUR')||m.includes('USD')&&!m.includes('BTC')){base=1.28550; tf="M15 Entry | H1 HTF - Forex";}
+ else if(m.includes('V')||m.includes('Boom')||m.includes('Crash')||m.includes('Jump')||m.includes('Step')){base=185.50; tf="M1 Entry | M5 HTF - Fast Volatility";}
+ else if(m.includes('BTC')){base=67200; tf="H1 Entry | 4H HTF - Crypto";}
+ else if(m.includes('NAS')||m.includes('US')){base=18500; tf="M15 Entry | H1 HTF - Indices";}
+ else if(m.includes('XAU')){base=2685.50; tf="M15 Entry | H1 HTF - Gold King";}
+ document.getElementById('tf').innerText="Best TF: "+tf;
+ document.getElementById('en').innerText=base;
+ calc();
 }
-document.getElementById('chart').addEventListener('change',e=>{
-  const r=new FileReader();
-  r.onload=()=>{document.getElementById('preview').innerHTML=`<img src="${r.result}" style="width:100%;border-radius:10px;border:1px solid #333">`;};
-  r.readAsDataURL(e.target.files[0]);
-});
+function calc(){
+ let e=parseFloat(document.getElementById('en').innerText);
+ let dec = e<100 ? 5 : 2; let pip = e<100 ? 0.0010 : 10;
+ let sl,tp1,tp2,tp3;
+ if(buy){sl=(e-pip).toFixed(dec); tp1=(e+pip).toFixed(dec); tp2=(e+pip*2).toFixed(dec); tp3=(e+pip*3).toFixed(dec);}
+ else{sl=(e+pip).toFixed(dec); tp1=(e-pip).toFixed(dec); tp2=(e-pip*2).toFixed(dec); tp3=(e-pip*3).toFixed(dec);}
+ document.getElementById('sl').innerText=sl; document.getElementById('tp1').innerText=tp1;
+ document.getElementById('tp2').innerText=tp2; document.getElementById('tp3').innerText=tp3;
+}
+function flip(){
+ buy=!buy; let b=document.getElementById('sig');
+ if(buy){b.innerText='BUY NOW'; b.className='signal-box buy-bg buy';}
+ else{b.innerText='SELL NOW'; b.className='signal-box sell-bg sell';}
+ calc();
+}
+upd();
 </script>
 </body>
 </html>
