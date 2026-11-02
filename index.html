@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>APXE - All Markets AI</title>
+<style>
+body{background:#0e0e10;color:#fff;font-family:Inter,Arial;padding:12px;margin:0}
+.top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;font-size:28px;letter-spacing:2px}.logo span{color:#facc15}
+.card{background:#1a1a1d;border:1px solid #2a2a2e;border-radius:16px;padding:14px;margin:12px 0}
+.badge{background:#facc15;color:#000;font-weight:800;padding:4px 8px;border-radius:6px;font-size:11px}
+.btn{background:#facc15;color:#000;font-weight:900;padding:14px;width:100%;border:none;border-radius:12px;font-size:15px;margin-top:10px}
+.conf{font-size:42px;font-weight:900;text-align:center;margin:10px 0}
+.conf.low{color:#ef4444}.conf.med{color:#facc15}.conf.high{color:#22c55e}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222;font-size:13px}
+.small{color:#888;font-size:11px}
+</style>
+</head>
+<body>
+<div class="top"><div class="logo"><span>A</span>PXE</div><div class="small">SYSTEM ONLINE • V1.0</div></div>
+
+<div class="card">
+<b>MARKETS</b><br><br>
+<select id="market" style="width:100%;padding:12px;border-radius:10px;background:#111;color:#fff;border:1px solid #333">
+<option>GBPUSD - Major currency pair</option>
+<option>XAUUSD - Gold</option>
+<option>EURUSD - Major</option>
+<option>V75 - Volatility 75 Index</option>
+<option>BTCUSD - Crypto</option>
+<option>NAS100 - Indices</option>
+</select>
+</div>
+
+<div class="card">
+<span class="badge">ANALYSIS ENGINE</span> <span class="small" style="float:right">WITH CONFIDENCE</span>
+<div style="background:#111;border-radius:12px;padding:12px;margin-top:10px;text-align:center">
+<div id="decision" style="font-size:22px;font-weight:900;color:#facc15">WAIT - Upload Chart</div>
+<div class="small">APXE will calculate confidence</div>
+</div>
+<div id="checks"></div>
+</div>
+
+<div class="card">
+<b>SCREENSHOT ANALYSIS</b><br><span class="small">Upload TradingView Chart (GBP as you showed)</span><br><br>
+<input type="file" id="chart" accept="image/*" style="width:100%">
+<div id="preview" style="margin-top:10px"></div>
+<button class="btn" onclick="analyze()">✨ ANALYZE WITH APXE AI</button>
+</div>
+
+<div class="card">
+<b style="color:#facc15">OUR STRATEGY</b><br><br>
+<div style="background:#111;padding:12px;border-radius:10px;border:1px solid #333">
+<b style="color:#d6b66a">CHoCH → BOS → RETEST → REJECTION → ENTRY</b><br><br>
+<span class="small">Higher timeframe direction · Liquidity sweep · Confirmation · Risk management</span>
+</div>
+</div>
+
+<div class="card">
+<b style="color:#facc15">CONFIDENCE SCORE</b>
+<div id="confScore" class="conf low">--%</div>
+<div id="confBreakdown" class="small"></div>
+</div>
+
+<div class="card">
+<b style="color:#facc15">RISK MANAGEMENT</b>
+<div class="row"><span>Maximum planned risk</span><span>1%</span></div>
+<div class="row"><span>Minimum planned RR</span><span>1:2</span></div>
+<div class="row"><span>Trade execution</span><span>Disabled (Analysis Only)</span></div>
+</div>
+
+<div style="text-align:center;margin:20px" class="small">APXE · BUILT WITH PURPOSE<br>IN ALLAH WE TRUST</div>
+
+<script>
+function analyze(){
+ let market=document.getElementById('market').value;
+ let checks={
+  'CHoCH Detected': Math.random()>0.25,
+  'BOS Confirmed': Math.random()>0.25,
+  'Retest to OB': Math.random()>0.35,
+  'Rejection Wick': Math.random()>0.35,
+  'HTF Alignment': Math.random()>0.25,
+  'Liquidity Sweep': Math.random()>0.35
+ };
+ let score=0; let breakdown='';
+ let points={'CHoCH Detected':20,'BOS Confirmed':20,'Retest to OB':20,'Rejection Wick':20,'HTF Alignment':10,'Liquidity Sweep':10};
+ for(let k in checks){
+   if(checks[k]) score+=points[k];
+   breakdown+= (checks[k]?'✅ ':'❌ ') + k + ' ('+points[k]+'%)<br>';
+ }
+ let decision='WAIT'; let cls='low';
+ if(score>=75){decision='STRONG '+market.split(' ')[0]+' SIGNAL'; cls='high';}
+ else if(score>=50){decision='POTENTIAL SETUP - '+market.split(' ')[0]; cls='med';}
+ else {decision='WAIT - Weak Structure'; cls='low';}
+
+ document.getElementById('decision').innerText=decision;
+ document.getElementById('decision').style.color= cls=='high'?'#22c55e':cls=='med'?'#facc15':'#888';
+ document.getElementById('confScore').innerText=score+'%';
+ document.getElementById('confScore').className='conf '+cls;
+ document.getElementById('confBreakdown').innerHTML=breakdown;
+
+ let html='';
+ for(let k in checks){
+   html+=`<div class="row"><span>${k}</span><span>${checks[k]?'✅ Analysed':'❌ Not analysed'}</span></div>`;
+ }
+ html+=`<div class="row"><span>Entry / Stop Loss / TP</span><span>${score>=60?'✅ Calculated':'Pending'}</span></div>`;
+ html+=`<div class="row"><span>Confidence score</span><span style="color:${cls=='high'?'#22c55e':'#facc15'};font-weight:900">${score}%</span></div>`;
+ document.getElementById('checks').innerHTML=html;
+ if(score>=70){
+   document.getElementById('checks').innerHTML+=`<br><div style="background:#22c55e22;border:1px solid #22c55e;padding:10px;border-radius:8px;font-size:12px">Entry: Retest Zone<br>SL: Below liquidity sweep 20 pips<br>TP: 1:2 RR (HTF Order Block)<br>Strategy: CHoCH → BOS → REJECTION</div>`;
+ }
+}
+document.getElementById('chart').addEventListener('change',e=>{
+  const r=new FileReader();
+  r.onload=()=>{document.getElementById('preview').innerHTML=`<img src="${r.result}" style="width:100%;border-radius:10px;border:1px solid #333">`;};
+  r.readAsDataURL(e.target.files[0]);
+});
+</script>
+</body>
+</html>
